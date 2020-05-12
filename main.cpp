@@ -17,26 +17,24 @@ int main(){
         totalLine+=line;
     }
     line = "ATG";
+    //Print statements for debugging
+    //std::cout << totalLine[106] << totalLine[106 + 1] << totalLine[106 + 2] << '\n';
+    //std::cout << totalLine[133] << totalLine[133 + 1] << totalLine[133 + 2] << '\n';
     std::ofstream output("frames.txt");
     for(std::size_t pos = totalLine.find(line, 0);pos != std::string::npos; pos = totalLine.find(line,pos+1)){
-        std::size_t third(pos + 2);
-        for(std::size_t first(pos), second(pos + 1); third < totalLine.size(); ++third){
+        std::size_t first(pos);
+        for(std::size_t second(pos + 1),third(pos + 2); third < totalLine.size();third = (second = (first+=3) + 1) + 1){
             //These ifs look for stop codons
-            if(totalLine[first++] == 'A'){
-                if(totalLine[second] == 'T'){
-                    if(totalLine[third] == 'T' || totalLine[third] == 'C'){
-                        break;
-                    }
+            if(totalLine[first] == 'T'){
+                if(totalLine[second] == 'A' && (totalLine[third] == 'A' || totalLine[third] == 'G')){
+                    break;
                 }
-                else if(totalLine[second] == 'C'){
-                    if(totalLine[third] == 'T'){
-                        break;
-                    }
+                else if(totalLine[second] == 'G' && totalLine[third] == 'A'){
+                    break;
                 }
             }
-            ++second;
         }
-        output << pos << '\t' << third << '\t' << (third - pos) << '\n';
+        output << pos << '\t' << first << '\t' << (first - pos) << '\n';
         //Here, find open reading frames. No need to use vectors
     }
 
@@ -46,7 +44,7 @@ int main(){
     for(const auto& i : positions) std::cout << i << ' ';
     std::cout << '\n';
 */
-    //std::cout << totalLine[17680] << totalLine[17680 + 1] << totalLine[17680 + 2] << '\n';
+    
     
 
 }
