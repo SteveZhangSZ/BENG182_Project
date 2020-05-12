@@ -1,9 +1,9 @@
 #include <cstdint>
 #include <iostream>
 #include <fstream> //open files
-#include <vector>
 
 struct Frame{
+    //Unused Frame object
     const std::size_t start, end, frame;
     constexpr Frame() : start{0}, end{0}, frame{0}{}
     constexpr Frame(std::size_t s, std::size_t e, std::size_t f) : start{s}, end{e}, frame{f}{}
@@ -16,7 +16,7 @@ int main(){
     for(getline(theFile, line);getline(theFile, line); ){
         totalLine+=line;
     }
-    line = "ATG";
+    line = "ATG"; //the start codon
     //Print statements for debugging
     //std::cout << totalLine[106] << totalLine[106 + 1] << totalLine[106 + 2] << '\n';
     //std::cout << totalLine[133] << totalLine[133 + 1] << totalLine[133 + 2] << '\n';
@@ -37,14 +37,4 @@ int main(){
         output << pos << '\t' << first << '\t' << (first - pos) << '\n';
         //Here, find open reading frames. No need to use vectors
     }
-
-
-
-/*
-    for(const auto& i : positions) std::cout << i << ' ';
-    std::cout << '\n';
-*/
-    
-    
-
 }
