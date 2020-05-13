@@ -36,6 +36,5 @@ int main(){
         }
         output << '\t' << pos << '\t' << first << '\n';
         //The sequence + tab + start + tab + end + new line
-        //Doesn't include start codon
     }
 }
