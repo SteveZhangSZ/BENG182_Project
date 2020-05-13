@@ -16,12 +16,11 @@ int main(){
     for(getline(theFile, line);getline(theFile, line); ){
         totalLine+=line;
     }
-    line = "ATG"; //the start codon
     //Print statements for debugging
     //std::cout << totalLine[106] << totalLine[106 + 1] << totalLine[106 + 2] << '\n';
     //std::cout << totalLine[133] << totalLine[133 + 1] << totalLine[133 + 2] << '\n';
     std::ofstream output("frames.txt");
-    for(std::size_t pos = totalLine.find(line, 0);pos != std::string::npos; pos = totalLine.find(line,pos+1)){
+    for(std::size_t pos = totalLine.find(line = "ATG", 0);pos != std::string::npos; pos = totalLine.find(line,pos+1)){
         std::size_t first(pos);
         for(std::size_t second(pos + 1),third(pos + 2); third < totalLine.size();third = (second = (first+=3) + 1) + 1){
             //These ifs look for stop codons
