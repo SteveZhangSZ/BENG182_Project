@@ -33,8 +33,10 @@ int main(){
                     break;
                 }
             }
+            output << totalLine[first] << totalLine[second] << totalLine[third];
         }
-        output << pos << '\t' << first << '\t' << (first - pos) << '\n';
-        //Here, find open reading frames. No need to use vectors
+        output << '\t' << pos << '\t' << first << '\n';
+        //The sequence + tab + start + tab + end + new line
+        //Doesn't include start codon
     }
 }
