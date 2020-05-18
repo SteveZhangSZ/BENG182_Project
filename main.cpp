@@ -85,6 +85,8 @@ void loadStringIntoFile(std::size_t start, std::size_t end){
     output << '\n';
 }
 //taatgtgtaaaattaattttagtagtgctatccccat
+
+//Almost done implementing searching through complementary strand
 void completeMethod(){
 
     //The initial values of complement are in the 29000s, but you also have to change it to the low-ish equivalent, where the idx is targeting the beginning letters of a string. MAKE SURE YOU DON'T CONFUSE THE TWO
