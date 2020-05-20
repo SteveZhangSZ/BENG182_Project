@@ -1,0 +1,14 @@
+Commit date: May 20, 2020
+When recording the nucleotides, the code assumes that in the reverse complement sequence, the nucleotide
+having an index of one is the leftmost, like the original sequence.
+
+If there are multiple strands with the same end position, only the longest one ending at that position 
+will be recorded
+
+Any reading frame on the forward strand is marked with '+' and 
+any on the reverse strand is marked with '-'
+
+The stop codon isn't recorded in the sequence.
+
+The start index refers to the 'T' in "CAT", the reverse complement of "ATG". The end index refers to the
+first stop codon letter the sequence ends on.
