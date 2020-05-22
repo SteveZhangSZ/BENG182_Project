@@ -1,40 +1,17 @@
 #include <cstdint> //for uint_least16_t
 #include <iostream> //std::cout for print statements to debug stuff
 #include <fstream> //open files
-struct Frame{
-    //Unused and probably unnecessary Frame object
-    const std::size_t start, end, frame;
-    constexpr Frame() : start{0}, end{0}, frame{0}{}
-    constexpr Frame(std::size_t s, std::size_t e, std::size_t f) : start{s}, end{e}, frame{f}{}
-};
-std::ifstream theFile("sars_cov2.fasta");
+
 std::string line, totalLine;
 std::size_t startCodonNormal(std::size_t start){
-    for(/*std::size_t firstLetterOfStartCodon*/; start < totalLine.size(); start+=3){
-    /*
-        if(start == 106){
-            std::cout << totalLine[start] << totalLine[start + 1] << totalLine[start + 2] << '\n';
-        }
-    */
+    for(; start < totalLine.size() - 2; start+=3){
         if(totalLine[start] == 'A' && totalLine[start + 1] == 'T'
         && totalLine[start + 2] == 'G'){
             return start;//start codon found
         }
-        /*
-        if(totalLine[start] == 'G' && totalLine[start - 1] == 'T'
-        && totalLine[firstLetterOfStartCodon = start - 2] == 'A'){
-            return firstLetterOfStartCodon;//start codon found
-        }
-        if(totalLine[start] == 'T' && totalLine[firstLetterOfStartCodon = start - 1] == 'A'
-        && totalLine[start + 1] == 'G'){
-            return firstLetterOfStartCodon;//start codon found
-        }
-        */
     }
     return std::string::npos;//Reached end of string, no matches are available
 }
-
-std::size_t lastIdx{0}; /*for looking at the complement only*/
 
 /*
 1. Initialize a start codon value for a frame
@@ -45,7 +22,7 @@ and greater than the current start codon value
 3. Change the same frame's start codon index value to be an 
 appropriate one that's greater than the stop codon's index
 */
-std::ofstream output("frames.txt");
+
 
 //Start == 2, 3, or 4, different value for each frame. Start idx also equals the first letter of the codon
 std::size_t findFirstStopCodonComplement(std::size_t start){
@@ -69,7 +46,7 @@ Very first stop codon of that frame.
  
 It finds start codons, only keeping the maximum index, until it reaches another stop codon.
  
-The returned value, dubbed RV, will be the “another stop codon” and be the 
+The returned value will be the “another stop codon” and be the 
 start parameter upon the next call
 */
 std::pair<std::size_t,std::size_t> findStartCodonBetweenStop(std::size_t start){//For the reverse complement
@@ -105,7 +82,8 @@ std::size_t otherStopCodonNormal(std::size_t start){
     }
     return totalLine.size();
 }
-void otherCompleteMethod(){
+void theCompleteMethod(){
+    std::ofstream output("frames.txt");
     std::size_t startCodonArray[]{0,0,0}; //Has all three forward frame's start index
 
     //Has all 6 frames', forward and reverse, stop codon index
@@ -121,8 +99,8 @@ void otherCompleteMethod(){
 
     for(const uint_least8_t i : {0,1,2}){
         while(!startAndStopArray[i].first){
-            stopCodonArray[i + 3] = startAndStopArray[i].second;
-            startAndStopArray[i] = findStartCodonBetweenStop(startAndStopArray[i].second + 3);
+            startAndStopArray[i] = findStartCodonBetweenStop(
+                (stopCodonArray[i + 3] = startAndStopArray[i].second) + 3);
         } 
     }
     uint_least8_t normal(startCodonArray[0] < startCodonArray[1] ? 
@@ -156,9 +134,9 @@ void otherCompleteMethod(){
             normal = (startCodonArray[0] < startCodonArray[1] ? 
             (startCodonArray[0] < startCodonArray[2] ? 0 : 2) :
             (startCodonArray[1] < startCodonArray[2] ? 1 : 2));
-        } else {
+        } else {//startAndStopArray[complement].first
             if(startAndStopArray[complement].first - stopCodonArray[compPlusThree] >= 90){
-                output << startAndStopArray[complement].first << '\t' << (stopCodonArray[compPlusThree] - 1) << "\t-\t";
+                output << (stopCodonArray[compPlusThree] - 1) << '\t' << startAndStopArray[complement].first << "\t-\t";
                 for(std::size_t idx{startAndStopArray[complement].first}; idx > stopCodonArray[compPlusThree]; --idx){
                     output << 
                     (totalLine[idx] < 'D' ? (totalLine[idx] == 'A' ? 'T' : 'G') : (totalLine[idx] == 'T' ? 'A' : 'C'));
@@ -167,10 +145,8 @@ void otherCompleteMethod(){
                 output << '\n';
                 //record info into the file
             }
-            do{
-                startAndStopArray[complement] = findStartCodonBetweenStop((stopCodonArray[compPlusThree]
-                 = startAndStopArray[complement].second) + 3);
-            } while(!startAndStopArray[complement].first);
+            while(!(startAndStopArray[complement] = findStartCodonBetweenStop((stopCodonArray[compPlusThree]
+                 = startAndStopArray[complement].second) + 3)).first){}
             compPlusThree = (complement = (startAndStopArray[0].first < startAndStopArray[1].first ?
             (startAndStopArray[0].first < startAndStopArray[2].first ? 0 : 2) :
             (startAndStopArray[1].first < startAndStopArray[2].first ? 1 : 2))) + 3;
@@ -178,11 +154,11 @@ void otherCompleteMethod(){
     }
 }
 int main(){
+    std::ifstream theFile("sars_cov2.fasta");
     //skip first line
     for(getline(theFile, line);getline(theFile, line); ){
         totalLine+=line;
     }
-    lastIdx = totalLine.size();
-    otherCompleteMethod();
+    theCompleteMethod();
 }
 //clang++ -Wall -std=c++1z -stdlib=libc++ -g main.cpp -o main && ./main
