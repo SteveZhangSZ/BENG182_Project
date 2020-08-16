@@ -1,3 +1,10 @@
+Commit date: Aug 16, 2020
+Removed some unnecessary comments and added README.md
+
+Commit date: May 23, 2020
+For negative strands, the indices were switched so the number on the left is smaller than the 
+number on the right
+
 Commit date: May 20, 2020
 When recording the nucleotides, the code assumes that in the reverse complement sequence, the nucleotide
 having an index of one is the leftmost, like the original sequence.

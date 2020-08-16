@@ -13,17 +13,7 @@ std::size_t startCodonNormal(std::size_t start){
     return std::string::npos;//Reached end of string, no matches are available
 }
 
-/*
-1. Initialize a start codon value for a frame
-
-Loop:
-2. Find a stop codon that's reachable by the same frame 
-and greater than the current start codon value
-3. Change the same frame's start codon index value to be an 
-appropriate one that's greater than the stop codon's index
-*/
-
-
+//0-based indexing
 //Start == 2, 3, or 4, different value for each frame. Start idx also equals the first letter of the codon
 std::size_t findFirstStopCodonComplement(std::size_t start){
     for(; start < totalLine.size(); start+=3){
@@ -35,20 +25,6 @@ std::size_t findFirstStopCodonComplement(std::size_t start){
     return std::string::npos;
 }
 
-/* How findTwoStopCodons should work:
-
-Finds the first and second stop codon on a frame
-Then second and third on the same frame
-Then third and fourth etc.
- 
-The very first value of its parameter, start, will be the index of the
-Very first stop codon of that frame. 
- 
-It finds start codons, only keeping the maximum index, until it reaches another stop codon.
- 
-The returned value will be the “another stop codon” and be the 
-start parameter upon the next call
-*/
 std::pair<std::size_t,std::size_t> findStartCodonBetweenStop(std::size_t start){//For the reverse complement
     //Find the indices of two subsequent stop codons on the same frame
     for(std::size_t theStart{0}; start < totalLine.size(); start+=3){
@@ -68,10 +44,16 @@ std::pair<std::size_t,std::size_t> findStartCodonBetweenStop(std::size_t start){
 }
 //Look for stop codons in the same frame and whose index exceeds "start"
 
-
+/*
+1. Initialize a start codon value for a frame
+Loop:
+2. Find a stop codon that's reachable by the same frame 
+and greater than the current start codon value
+3. Change the same frame's start codon index value to be an 
+appropriate one that's greater than the stop codon's index
+*/
 //Looks for the stop codon locations in normal/forward sequence
 std::size_t otherStopCodonNormal(std::size_t start){
-    //std::cout << start << ' ';
     for(std::size_t second{start + 1}, third{start + 2}; third < totalLine.size();
         start+=3, second+=3, third+=3){
         if(totalLine[start] == 'T' && 
@@ -120,8 +102,8 @@ void theCompleteMethod(){
     startAndStopArray[2].first != std::string::npos || startAndStopArray[1].first != std::string::npos){
         //Note the <=. Comparing start codon indices here
         if(startCodonArray[normal] <= startAndStopArray[complement].first){ 
-        
-            if(stopCodonArray[normal] - startCodonArray[normal] >= 90){
+            #define MINFRAMELENGTH 90
+            if(stopCodonArray[normal] - startCodonArray[normal] >= MINFRAMELENGTH){
                 output << startCodonArray[normal] << '\t' << (stopCodonArray[normal] + 1) << "\t+\t";
                 for(std::size_t idx{startCodonArray[normal]}; idx < stopCodonArray[normal]; ++idx){
                     output << totalLine[idx];
@@ -134,8 +116,8 @@ void theCompleteMethod(){
             normal = (startCodonArray[0] < startCodonArray[1] ? 
             (startCodonArray[0] < startCodonArray[2] ? 0 : 2) :
             (startCodonArray[1] < startCodonArray[2] ? 1 : 2));
-        } else {//startAndStopArray[complement].first
-            if(startAndStopArray[complement].first - stopCodonArray[compPlusThree] >= 90){
+        } else {
+            if(startAndStopArray[complement].first - stopCodonArray[compPlusThree] >= MINFRAMELENGTH){
                 output << (stopCodonArray[compPlusThree] - 1) << '\t' << startAndStopArray[complement].first << "\t-\t";
                 for(std::size_t idx{startAndStopArray[complement].first}; idx > stopCodonArray[compPlusThree]; --idx){
                     output << 
@@ -145,6 +127,7 @@ void theCompleteMethod(){
                 output << '\n';
                 //record info into the file
             }
+            #undef MINFRAMELENGTH
             while(!(startAndStopArray[complement] = findStartCodonBetweenStop((stopCodonArray[compPlusThree]
                  = startAndStopArray[complement].second) + 3)).first){}
             compPlusThree = (complement = (startAndStopArray[0].first < startAndStopArray[1].first ?
